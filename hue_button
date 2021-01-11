@@ -52,10 +52,10 @@ action:
         sequence:
         - service: light.turn_on
           data:
-            brightness_step_pct: -10
+            brightness_step_pct: -20
             transition: 1
           target: !input 'light'
-        - delay: '0.5'
+        - delay: '0.2'
   - conditions:
     - '{{ command == ''skip_forward'' }}'
     sequence:
@@ -68,7 +68,7 @@ action:
         sequence:
         - service: light.turn_on
           data:
-            brightness_step_pct: 10
+            brightness_step_pct: 20
             transition: 1
           target: !input 'light'
-        - delay: '0.5'
+        - delay: '0.2'
