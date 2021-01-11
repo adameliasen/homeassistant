@@ -1,0 +1,74 @@
+blueprint:
+  name: zigbee2mqtt - Hue on/off button with dimmer
+  description: 'Control on off switch from Philips.'
+
+  domain: automation
+  input:
+    switch:
+      name: switch
+      description: Hue on/off switch
+      selector:
+        entity:
+          domain: sensor
+    light:
+      name: Light
+      description: The light to control
+      selector:
+        target:
+          entity:
+            domain: light
+
+mode: restart
+max_exceeded: silent
+trigger:
+- platform: state
+  entity_id: !input 'switch'
+  attribute: action
+action:
+- variables:
+    command: '{{ trigger.to_state.state }}'
+- choose:
+  - conditions:
+    - '{{ command == ''off'' }}'
+    sequence:
+    - service: light.turn_off
+      target: !input 'light'
+      data: {}
+  - conditions:
+    - '{{ command == ''on'' }}'
+    sequence:
+    - service: light.turn_on
+      data: {}
+      target: !input 'light'
+  - conditions:
+    - '{{ command == ''brightness_move_down'' }}'
+    sequence:
+    - repeat:
+        until:
+        - condition: state
+          entity_id: !input 'switch'
+          state: brightness_stop
+          attribute: action
+        sequence:
+        - service: light.turn_on
+          data:
+            brightness_step_pct: -10
+            transition: 1
+          target: !input 'light'
+        - delay: '0.5'
+  - conditions:
+    - '{{ command == ''brightness_move_up'' }}'
+    sequence:
+    - repeat:
+        until:
+        - condition: state
+          entity_id: !input 'switch'
+          state: brightness_stop
+          attribute: action
+        sequence:
+        - service: light.turn_on
+          data:
+            brightness_step_pct: 10
+            transition: 1
+          target: !input 'light'
+        - delay: '0.5'
