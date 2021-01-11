@@ -41,13 +41,13 @@ action:
       data: {}
       target: !input 'light'
   - conditions:
-    - '{{ command == ''brightness_move_down'' }}'
+    - '{{ command == ''skip_backward'' }}'
     sequence:
     - repeat:
         until:
         - condition: state
           entity_id: !input 'switch'
-          state: brightness_stop
+          state: release
           attribute: action
         sequence:
         - service: light.turn_on
@@ -57,13 +57,13 @@ action:
           target: !input 'light'
         - delay: '0.5'
   - conditions:
-    - '{{ command == ''brightness_move_up'' }}'
+    - '{{ command == ''skip_forward'' }}'
     sequence:
     - repeat:
         until:
         - condition: state
           entity_id: !input 'switch'
-          state: brightness_stop
+          state: release
           attribute: action
         sequence:
         - service: light.turn_on
